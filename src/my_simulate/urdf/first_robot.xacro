@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="first_robot">
+
+  <!-- ========== MATERIAL DEFINITIONS ========== -->
+  <xacro:property name="white_rgba" value="1.0 1.0 1.0 0.5"/>
+  <xacro:property name="black_rgba" value="0.0 0.0 0.0 0.5"/>
+
+  <material name="white">
+    <color rgba="${white_rgba}"/>
+  </material>
+  
+  <material name="black">
+    <color rgba="${black_rgba}"/>
+  </material>
+
+  <!-- ========== GEOMETRY PARAMETERS ========== -->
+  <xacro:property name="base_radius" value="0.17"/>
+  <xacro:property name="base_length" value="0.104"/>
+  <xacro:property name="imu_size" value="0.02"/>
+  <xacro:property name="imu_z_offset" value="0.03"/>
+
+  <!-- ========== MACRO DEFINITIONS ========== -->
+
+  <!-- Base Link Macro -->
+  <xacro:macro name="base_link" params="name:=base_link radius length">
+    <link name="${name}">
+      <visual>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <geometry>
+          <cylinder radius="${radius}" length="${length}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- IMU Link Macro -->
+  <xacro:macro name="imu_link" params="name:=imu_link size">
+    <link name="${name}">
+      <visual>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <geometry>
+          <box size="${size} ${size} ${size}"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- IMU Joint Macro -->
+  <xacro:macro name="imu_joint" params="name:=imu_joint parent child xyz rpy:='0.0 0.0 0.0'">
+    <joint name="${name}" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${child}"/>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- ========== ROBOT INSTANTIATION ========== -->
+  
+  <!-- Create Base Link -->
+  <xacro:base_link radius="${base_radius}" length="${base_length}"/>
+
+  <!-- Create IMU Link -->
+  <xacro:imu_link size="${imu_size}"/>
+  <xacro:imu_link name="imu2" size="${imu_size}"/>
+
+  <!-- Attach IMUs -->
+  <xacro:imu_joint parent="base_link" child="imu_link" xyz="0.0 0.0 ${imu_z_offset}"/>
+  <xacro:imu_joint name = "imujonit2" parent="base_link" child="imu2" xyz="0.0 0.0 -0.03"/>
+
+</robot>
